@@ -57,7 +57,11 @@ function updateJson(json){
     delete json.pages[page].tasks;
 
     for(let element in json.pages[page].elements) {
-      json.pages[page].elements[element].type = 'radiogroup';
+      if(json.pages[page].elements[element].type == 'picklist'){
+        json.pages[page].elements[element].type = 'radiogroup';
+      } else if (json.pages[page].elements[element].type == 'date'){
+        json.pages[page].elements[element].type = 'datepicker';
+      }
       json.pages[page].elements[element].choices = json.pages[page].elements[element].values;
       delete json.pages[page].elements[element].values;
       for(let choice in json.pages[page].elements[element].choices){
@@ -72,6 +76,17 @@ function updateJson(json){
 }
 
 updateJson(data);
+
+
+var json = {
+  "elements": [
+      {
+          "name": "date",
+          "type": "datepicker",
+      }
+  ]
+};
+
 
 class App extends Component {
   
