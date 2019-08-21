@@ -24,12 +24,15 @@ function updateJson(json){
       } else if (json.pages[page].elements[element].type === 'date'){
         json.pages[page].elements[element].type = 'datepicker';
       }
+      json.pages[page].elements[element].name = json.pages[page].elements[element].description;
       json.pages[page].elements[element].choices = json.pages[page].elements[element].values;
       delete json.pages[page].elements[element].values;
+      delete json.pages[page].elements[element].description;
       for(let choice in json.pages[page].elements[element].choices){
-          if(json.pages[page].elements[element].choices[choice].name){
-            json.pages[page].elements[element].choices[choice].text = json.pages[page].elements[element].choices[choice].name;
-            delete json.pages[page].elements[element].choices[choice].name;
+        if(json.pages[page].elements[element].choices[choice].name){
+          json.pages[page].elements[element].choices[choice].text = json.pages[page].elements[element].choices[choice].name;
+          delete json.pages[page].elements[element].choices[choice].name;
+          json.pages[page].elements[element].choices[choice].value = json.pages[page].elements[element].choices[choice].text;
         }
       }
     }
@@ -41,6 +44,8 @@ function updateJson(json){
 
 updateJson(data);
 updateJson(dataTwo);
+
+console.log(data);
 
 const App = ({ history }) => {
   return (
