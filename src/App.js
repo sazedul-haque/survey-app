@@ -1,48 +1,10 @@
-import React, { Component } from "react";
-import * as Survey from "survey-react";
+import React from 'react';
+import { Route, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
+import First from './pages/First'
+import Second from './pages/Second';
 
 import data from './data.json';
-
-import "survey-react/survey.css";
-import SurveyCreator from "./SurveyCreator";
-import logo from "./logo.svg";
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.css";
-
-import "jquery-ui/themes/base/all.css";
-import "nouislider/distribute/nouislider.css";
-import "select2/dist/css/select2.css";
-import "bootstrap-slider/dist/css/bootstrap-slider.css";
-
-import "jquery-bar-rating/dist/themes/css-stars.css";
-
-import $ from "jquery";
-import "jquery-ui/ui/widgets/datepicker.js";
-import "select2/dist/js/select2.js";
-import "jquery-bar-rating";
-
-import * as widgets from "surveyjs-widgets";
-
-import "icheck/skins/square/blue.css";
-window["$"] = window["jQuery"] = $;
-require("icheck");
-
-
-Survey.StylesManager.applyTheme("default");
-
-widgets.icheck(Survey, $);
-widgets.select2(Survey, $);
-widgets.inputmask(Survey);
-widgets.jquerybarrating(Survey, $);
-widgets.jqueryuidatepicker(Survey, $);
-widgets.nouislider(Survey);
-widgets.select2tagbox(Survey, $);
-widgets.signaturepad(Survey);
-widgets.sortablejs(Survey);
-widgets.ckeditor(Survey);
-widgets.autocomplete(Survey, $);
-widgets.bootstrapslider(Survey);
-
+import dataTwo from './data-two.json';
 
 function updateJson(json){
 
@@ -57,16 +19,18 @@ function updateJson(json){
     delete json.pages[page].tasks;
 
     for(let element in json.pages[page].elements) {
-      if(json.pages[page].elements[element].type == 'picklist'){
+      if(json.pages[page].elements[element].type === 'picklist'){
         json.pages[page].elements[element].type = 'radiogroup';
-      } else if (json.pages[page].elements[element].type == 'date'){
+      } else if (json.pages[page].elements[element].type === 'date'){
         json.pages[page].elements[element].type = 'datepicker';
       }
       json.pages[page].elements[element].choices = json.pages[page].elements[element].values;
       delete json.pages[page].elements[element].values;
       for(let choice in json.pages[page].elements[element].choices){
-        json.pages[page].elements[element].choices[choice].text = json.pages[page].elements[element].choices[choice].name;
-        delete json.pages[page].elements[element].choices[choice].name;
+          if(json.pages[page].elements[element].choices[choice].name){
+            json.pages[page].elements[element].choices[choice].text = json.pages[page].elements[element].choices[choice].name;
+            delete json.pages[page].elements[element].choices[choice].name;
+        }
       }
     }
 
@@ -76,61 +40,33 @@ function updateJson(json){
 }
 
 updateJson(data);
+updateJson(dataTwo);
 
-
-var json = {
-  "elements": [
-      {
-          "name": "date",
-          "type": "datepicker",
-      }
-  ]
-};
-
-
-class App extends Component {
-  
-  json = {}
-  
-  onValueChanged(result) {
-    console.log("value changed!");
-  }
-
-  onComplete(result) {
-    console.log("Complete! " + result);
-  }
-
-  render() {
-    Survey.Survey.cssType = "bootstrap";
-    var model = new Survey.Model(data);
-    return (
-      <div className="App">
-        <div className="container">
-          <div className="App-header">
-            <h2>Welcome to React with SurveyJS</h2>
-          </div>
-
-          <div className="surveyjs">
-            {/*If you want to show survey, uncomment the line below*/}
-            <Survey.Survey
-              model={model}
-              onComplete={this.onComplete}
-              onValueChanged={this.onValueChanged}
-            />
-
-            {/*If you do not want to show Survey Creator, comment the line below*/}
-            {/* <h1>SurveyJS Creator in action:</h1>
-            <SurveyCreator /> */}
-            
-          </div>
-
-          {/* <p className="App-intro">
-            To get started, edit <code>src/App.js</code> and save to reload.
-          </p> */}
+const App = ({ history }) => {
+  return (
+    <div className="App">
+      <div className="container">
+        <div className="App-header">
+          <h2>Welcome to React with SurveyJS</h2>
         </div>
+        
+        <Router history={history}>
+          <nav className="navbar navbar-inverse">
+            <ul className="nav navbar-nav">
+              <li><Link to="/first">Survey One</Link></li>
+              <li><Link to="/second">Survey Two</Link></li>
+            </ul>
+          </nav>
+
+          <Switch>
+            <Route path='/first' render={(props) => <First {...props} data={data} />}/>
+            <Route path='/second' render={(props) => <Second {...props} data={dataTwo} />}/>
+          </Switch>
+        </Router>
       </div>
-    );
-  }
+    </div>
+  );
 }
+
 
 export default App;
